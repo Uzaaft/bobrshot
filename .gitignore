@@ -1,0 +1,8 @@
+.DS_Store
+.zig-cache/
+zig-out/
+
+macos/BobrshotKit.xcframework/
+macos/Bobrshot.xcodeproj/project.xcworkspace/xcuserdata/
+macos/Bobrshot.xcodeproj/xcuserdata/
+macos/DerivedData/

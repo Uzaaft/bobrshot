@@ -1,0 +1,12 @@
+.{
+    .name = .bobrshot,
+    .version = "0.1.0-dev",
+    .fingerprint = 0xc67f0efa048e7a99,
+    .minimum_zig_version = "0.16.0",
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "include",
+        "src",
+    },
+}

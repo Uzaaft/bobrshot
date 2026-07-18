@@ -1,0 +1,4 @@
+module BobrshotKit {
+  umbrella header "bobrshot.h"
+  export *
+}
