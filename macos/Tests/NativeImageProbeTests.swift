@@ -44,4 +44,30 @@ final class NativeImageProbeTests: XCTestCase {
             XCTFail("Unexpected error: \(error)")
         }
     }
+
+    func testZigOptimizationPreservesDecodableImage() throws {
+        guard
+            let data = Data(
+                base64Encoded:
+                    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="
+            )
+        else {
+            XCTFail("PNG fixture is invalid")
+            return
+        }
+
+        let result = try BobrshotCore.optimizeImage(data)
+        let descriptor = try NativeImageProbe.inspect(result.data)
+
+        XCTAssertEqual(result.format, .png)
+        XCTAssertGreaterThanOrEqual(result.bytesRemoved, 0)
+        XCTAssertEqual(descriptor.widthPixels, 1)
+        XCTAssertEqual(descriptor.heightPixels, 1)
+    }
+
+    func testZigOptimizationRejectsEmptyData() {
+        XCTAssertThrowsError(try BobrshotCore.optimizeImage(Data())) { error in
+            XCTAssertEqual(error as? CoreOptimizationError, .invalidData)
+        }
+    }
 }
