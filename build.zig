@@ -31,8 +31,26 @@ pub fn build(builder: *std.Build) void {
     });
     const run_core_tests = builder.addRunArtifact(core_tests);
 
-    const test_step = builder.step("test", "Run the Zig core tests");
+    const c_api_test_module = builder.createModule(.{
+        .target = target,
+        .optimize = optimize,
+        .link_libc = true,
+    });
+    const c_api_test = builder.addExecutable(.{
+        .name = "c-api-test",
+        .root_module = c_api_test_module,
+    });
+    c_api_test.root_module.addCSourceFile(.{
+        .file = builder.path("test/c_api.c"),
+        .flags = &.{ "-std=c11", "-Wall", "-Wextra", "-Werror", "-Wpedantic" },
+    });
+    c_api_test.root_module.addIncludePath(builder.path("include"));
+    c_api_test.root_module.linkLibrary(core);
+    const run_c_api_test = builder.addRunArtifact(c_api_test);
+
+    const test_step = builder.step("test", "Run the Zig core and C API tests");
     test_step.dependOn(&run_core_tests.step);
+    test_step.dependOn(&run_c_api_test.step);
 
     const xcframework = builder.addSystemCommand(&.{"macos/build-xcframework.sh"});
     xcframework.addArtifactArg(core);

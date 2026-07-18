@@ -20,6 +20,15 @@ export fn bobrshot_core_version() callconv(.c) Version {
     return current_version;
 }
 
+export fn bobrshot_image_format_detect(
+    bytes: ?[*]const u8,
+    length: usize,
+) callconv(.c) u8 {
+    const data = bytes orelse return 0;
+    const format = media.detectImageFormat(data[0..length]) orelse return 0;
+    return @intFromEnum(format);
+}
+
 test "the C ABI reports the core version" {
     try std.testing.expectEqual(@as(usize, 6), @sizeOf(Version));
     try std.testing.expectEqual(@as(usize, 2), @alignOf(Version));
@@ -29,6 +38,15 @@ test "the C ABI reports the core version" {
     try std.testing.expectEqual(@as(u16, 0), version.major);
     try std.testing.expectEqual(@as(u16, 1), version.minor);
     try std.testing.expectEqual(@as(u16, 0), version.patch);
+}
+
+test "the C ABI detects encoded image formats" {
+    const png = "\x89PNG\r\n\x1a\nrest";
+    try std.testing.expectEqual(
+        @intFromEnum(media.ImageFormat.png),
+        bobrshot_image_format_detect(png.ptr, png.len),
+    );
+    try std.testing.expectEqual(@as(u8, 0), bobrshot_image_format_detect(null, 0));
 }
 
 test {

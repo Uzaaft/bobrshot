@@ -3,13 +3,13 @@ const std = @import("std");
 pub const probe_byte_count_max: usize = 64;
 
 pub const ImageFormat = enum(u8) {
-    png,
-    jpeg,
-    gif,
-    webp,
-    tiff,
-    heic,
-    heif,
+    png = 1,
+    jpeg = 2,
+    gif = 3,
+    webp = 4,
+    tiff = 5,
+    heic = 6,
+    heif = 7,
 };
 
 pub fn detectImageFormat(bytes: []const u8) ?ImageFormat {
