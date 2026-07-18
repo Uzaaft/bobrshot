@@ -12,12 +12,12 @@ must come from the host system and should not be installed through Nix.
 ## Commands
 
 - `zig build` builds the Zig core and native application.
-- `zig build test` runs the Zig core and compiled C API tests.
+- `zig build test` runs the Zig, compiled C API, and native macOS tests.
 - `zig build xcframework` builds `macos/BobrshotKit.xcframework`.
 - `zig build app` builds the native application.
 - `zig build run` builds and launches the native application.
 - `zig fmt --check .` checks Zig formatting.
-- `swift format lint --recursive --strict macos/Sources` checks Swift formatting.
+- `swift format lint --recursive --strict macos/Sources macos/Tests` checks Swift formatting.
 
 The built application is written to
 `zig-out/xcode/Build/Products/Debug/Bobrshot.app`.

@@ -10,6 +10,11 @@
 		010000000000000000000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000002 /* ContentView.swift */; };
 		010000000000000000000003 /* BobrshotCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000003 /* BobrshotCore.swift */; };
 		010000000000000000000004 /* BobrshotKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 020000000000000000000004 /* BobrshotKit.xcframework */; };
+		010000000000000000000005 /* NativeImageProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000006 /* NativeImageProbe.swift */; };
+		010000000000000000000006 /* NativeImageProbeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000007 /* NativeImageProbeTests.swift */; };
+		010000000000000000000007 /* NativeImageProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000006 /* NativeImageProbe.swift */; };
+		010000000000000000000008 /* BobrshotCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000003 /* BobrshotCore.swift */; };
+		010000000000000000000009 /* BobrshotKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 020000000000000000000004 /* BobrshotKit.xcframework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -18,6 +23,9 @@
 		020000000000000000000003 /* BobrshotCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BobrshotCore.swift; sourceTree = "<group>"; };
 		020000000000000000000004 /* BobrshotKit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = BobrshotKit.xcframework; sourceTree = "<group>"; };
 		020000000000000000000005 /* Bobrshot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bobrshot.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		020000000000000000000006 /* NativeImageProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeImageProbe.swift; sourceTree = "<group>"; };
+		020000000000000000000007 /* NativeImageProbeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeImageProbeTests.swift; sourceTree = "<group>"; };
+		020000000000000000000008 /* BobrshotTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BobrshotTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,6 +37,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		030000000000000000000002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				010000000000000000000009 /* BobrshotKit.xcframework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -36,6 +52,7 @@
 			isa = PBXGroup;
 			children = (
 				040000000000000000000002 /* Sources */,
+				040000000000000000000006 /* Tests */,
 				020000000000000000000004 /* BobrshotKit.xcframework */,
 				040000000000000000000005 /* Products */,
 			);
@@ -63,6 +80,7 @@
 			isa = PBXGroup;
 			children = (
 				020000000000000000000003 /* BobrshotCore.swift */,
+				020000000000000000000006 /* NativeImageProbe.swift */,
 			);
 			path = CoreBridge;
 			sourceTree = "<group>";
@@ -71,8 +89,17 @@
 			isa = PBXGroup;
 			children = (
 				020000000000000000000005 /* Bobrshot.app */,
+				020000000000000000000008 /* BobrshotTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		040000000000000000000006 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				020000000000000000000007 /* NativeImageProbeTests.swift */,
+			);
+			path = Tests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -92,6 +119,21 @@
 			productName = Bobrshot;
 			productReference = 020000000000000000000005 /* Bobrshot.app */;
 			productType = "com.apple.product-type.application";
+		};
+		050000000000000000000002 /* BobrshotTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 090000000000000000000003 /* Build configuration list for PBXNativeTarget "BobrshotTests" */;
+			buildPhases = (
+				070000000000000000000002 /* Sources */,
+				030000000000000000000002 /* Frameworks */,
+				080000000000000000000002 /* Resources */,
+			);
+			buildRules = ();
+			dependencies = ();
+			name = BobrshotTests;
+			productName = BobrshotTests;
+			productReference = 020000000000000000000008 /* BobrshotTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -115,12 +157,21 @@
 			productRefGroup = 040000000000000000000005 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
-			targets = (050000000000000000000001 /* Bobrshot */);
+			targets = (
+				050000000000000000000001 /* Bobrshot */,
+				050000000000000000000002 /* BobrshotTests */,
+			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		080000000000000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = ();
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		080000000000000000000002 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = ();
@@ -136,6 +187,17 @@
 				010000000000000000000001 /* BobrshotApp.swift in Sources */,
 				010000000000000000000002 /* ContentView.swift in Sources */,
 				010000000000000000000003 /* BobrshotCore.swift in Sources */,
+				010000000000000000000005 /* NativeImageProbe.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		070000000000000000000002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				010000000000000000000008 /* BobrshotCore.swift in Sources */,
+				010000000000000000000007 /* NativeImageProbe.swift in Sources */,
+				010000000000000000000006 /* NativeImageProbeTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -196,6 +258,30 @@
 			};
 			name = Release;
 		};
+		0A0000000000000000000005 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.uzaaft.bobrshot.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		0A0000000000000000000006 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.uzaaft.bobrshot.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -213,6 +299,15 @@
 			buildConfigurations = (
 				0A0000000000000000000003 /* Debug */,
 				0A0000000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		090000000000000000000003 /* Build configuration list for PBXNativeTarget "BobrshotTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0A0000000000000000000005 /* Debug */,
+				0A0000000000000000000006 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -1,4 +1,5 @@
 const std = @import("std");
+const builtin = @import("builtin");
 
 pub fn build(builder: *std.Build) void {
     const target = builder.standardTargetOptions(.{
@@ -12,22 +13,31 @@ pub fn build(builder: *std.Build) void {
         },
     });
     const optimize = builder.standardOptimizeOption(.{});
-
-    const core_module = builder.createModule(.{
-        .root_source_file = builder.path("src/core/main.zig"),
-        .target = target,
-        .optimize = optimize,
+    const native_target = builder.resolveTargetQuery(.{
+        .cpu_arch = builtin.cpu.arch,
+        .os_tag = .macos,
+        .os_version_min = .{ .semver = .{
+            .major = 14,
+            .minor = 0,
+            .patch = 0,
+        } },
     });
+    const xcode_architecture = switch (builtin.cpu.arch) {
+        .aarch64 => "arm64",
+        .x86_64 => "x86_64",
+        else => @panic("the macOS app supports only arm64 and x86_64"),
+    };
+    const xcode_destination = builder.fmt("platform=macOS,arch={s}", .{xcode_architecture});
 
-    const core = builder.addLibrary(.{
-        .name = "bobrshot",
-        .linkage = .static,
-        .root_module = core_module,
-    });
+    const core = addCore(builder, target, optimize);
+    const native_core = if (target.result.cpu.arch == native_target.result.cpu.arch)
+        core
+    else
+        addCore(builder, native_target, optimize);
     builder.installArtifact(core);
 
     const core_tests = builder.addTest(.{
-        .root_module = core_module,
+        .root_module = core.root_module,
     });
     const run_core_tests = builder.addRunArtifact(core_tests);
 
@@ -48,14 +58,31 @@ pub fn build(builder: *std.Build) void {
     c_api_test.root_module.linkLibrary(core);
     const run_c_api_test = builder.addRunArtifact(c_api_test);
 
-    const test_step = builder.step("test", "Run the Zig core and C API tests");
+    const test_step = builder.step("test", "Run the Zig, C API, and native macOS tests");
     test_step.dependOn(&run_core_tests.step);
     test_step.dependOn(&run_c_api_test.step);
 
     const xcframework = builder.addSystemCommand(&.{"macos/build-xcframework.sh"});
-    xcframework.addArtifactArg(core);
+    xcframework.addArtifactArg(native_core);
     const xcframework_step = builder.step("xcframework", "Build BobrshotKit.xcframework");
     xcframework_step.dependOn(&xcframework.step);
+
+    const native_tests = builder.addSystemCommand(&.{
+        "xcodebuild",
+        "-project",
+        "macos/Bobrshot.xcodeproj",
+        "-scheme",
+        "Bobrshot",
+        "-configuration",
+        "Debug",
+        "-destination",
+        xcode_destination,
+        "-derivedDataPath",
+        "zig-out/xcode",
+        "test",
+    });
+    native_tests.step.dependOn(&xcframework.step);
+    test_step.dependOn(&native_tests.step);
 
     const app = builder.addSystemCommand(&.{
         "xcodebuild",
@@ -65,6 +92,8 @@ pub fn build(builder: *std.Build) void {
         "Bobrshot",
         "-configuration",
         "Debug",
+        "-destination",
+        xcode_destination,
         "-derivedDataPath",
         "zig-out/xcode",
         "build",
@@ -81,4 +110,20 @@ pub fn build(builder: *std.Build) void {
     run.step.dependOn(&app.step);
     const run_step = builder.step("run", "Build and launch Bobrshot");
     run_step.dependOn(&run.step);
+}
+
+fn addCore(
+    builder: *std.Build,
+    target: std.Build.ResolvedTarget,
+    optimize: std.builtin.OptimizeMode,
+) *std.Build.Step.Compile {
+    return builder.addLibrary(.{
+        .name = "bobrshot",
+        .linkage = .static,
+        .root_module = builder.createModule(.{
+            .root_source_file = builder.path("src/core/main.zig"),
+            .target = target,
+            .optimize = optimize,
+        }),
+    });
 }

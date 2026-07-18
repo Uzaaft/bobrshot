@@ -33,7 +33,7 @@ jobs:
         run: zig build test
 
       - name: Check Swift formatting
-        run: swift format lint --recursive --strict macos/Sources
+        run: swift format lint --recursive --strict macos/Sources macos/Tests
 
       - name: Build macOS application
         run: zig build app
