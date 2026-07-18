@@ -51,8 +51,8 @@ enum CaptureConfigurationPlanner {
 
             let rect = target.rect.cgRect.standardized
             guard rect.width.isFinite, rect.height.isFinite,
-                  rect.origin.x.isFinite, rect.origin.y.isFinite,
-                  rect.width > 0, rect.height > 0
+                rect.origin.x.isFinite, rect.origin.y.isFinite,
+                rect.width > 0, rect.height > 0
             else {
                 throw ScreenCaptureError.invalidRegion
             }

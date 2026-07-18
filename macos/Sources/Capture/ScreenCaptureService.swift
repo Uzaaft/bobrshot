@@ -46,7 +46,7 @@ final class ScreenCaptureService {
         let catalog = Self.makeCatalog(from: content)
         let plan = try CaptureConfigurationPlanner.plan(target: target, catalog: catalog)
         let filter = try makeFilter(plan: plan, content: content)
-        let configuration = makeConfiguration(plan: plan, options: options)
+        let configuration = makeConfiguration(filter: filter, plan: plan, options: options)
 
         return try await captureImage(filter: filter, configuration: configuration)
     }
@@ -76,12 +76,20 @@ final class ScreenCaptureService {
     }
 
     private func makeConfiguration(
+        filter: SCContentFilter,
         plan: CaptureConfigurationPlan,
         options: ScreenshotOptions
     ) -> SCStreamConfiguration {
         let configuration = SCStreamConfiguration()
-        configuration.width = plan.outputWidth
-        configuration.height = plan.outputHeight
+        let captureSize = plan.sourceRect?.cgRect.size ?? filter.contentRect.size
+        let scale = Double(filter.pointPixelScale)
+        if scale > 0, scale.isFinite {
+            configuration.width = max(Int((captureSize.width * scale).rounded(.up)), 1)
+            configuration.height = max(Int((captureSize.height * scale).rounded(.up)), 1)
+        } else {
+            configuration.width = plan.outputWidth
+            configuration.height = plan.outputHeight
+        }
         configuration.showsCursor = options.includesCursor
         configuration.ignoreShadowsSingleWindow = !options.includesWindowShadow
         configuration.captureResolution = .best
@@ -104,7 +112,8 @@ final class ScreenCaptureService {
                         continuation.resume(returning: content)
                     } else {
                         continuation.resume(
-                            throwing: ScreenCaptureError.contentUnavailable("No content was returned.")
+                            throwing: ScreenCaptureError.contentUnavailable(
+                                "No content was returned.")
                         )
                     }
                 }

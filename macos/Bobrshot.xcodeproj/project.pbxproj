@@ -15,6 +15,13 @@
 		010000000000000000000007 /* NativeImageProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000006 /* NativeImageProbe.swift */; };
 		010000000000000000000008 /* BobrshotCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000003 /* BobrshotCore.swift */; };
 		010000000000000000000009 /* BobrshotKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 020000000000000000000004 /* BobrshotKit.xcframework */; };
+		01000000000000000000000A /* CaptureModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000009 /* CaptureModels.swift */; };
+		01000000000000000000000B /* CaptureConfigurationPlanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02000000000000000000000A /* CaptureConfigurationPlanner.swift */; };
+		01000000000000000000000C /* ScreenCapturePermissionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02000000000000000000000B /* ScreenCapturePermissionService.swift */; };
+		01000000000000000000000D /* ScreenCaptureService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02000000000000000000000C /* ScreenCaptureService.swift */; };
+		01000000000000000000000E /* CaptureConfigurationPlannerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02000000000000000000000D /* CaptureConfigurationPlannerTests.swift */; };
+		01000000000000000000000F /* CaptureModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000009 /* CaptureModels.swift */; };
+		010000000000000000000010 /* CaptureConfigurationPlanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02000000000000000000000A /* CaptureConfigurationPlanner.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +33,11 @@
 		020000000000000000000006 /* NativeImageProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeImageProbe.swift; sourceTree = "<group>"; };
 		020000000000000000000007 /* NativeImageProbeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeImageProbeTests.swift; sourceTree = "<group>"; };
 		020000000000000000000008 /* BobrshotTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BobrshotTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		020000000000000000000009 /* CaptureModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureModels.swift; sourceTree = "<group>"; };
+		02000000000000000000000A /* CaptureConfigurationPlanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureConfigurationPlanner.swift; sourceTree = "<group>"; };
+		02000000000000000000000B /* ScreenCapturePermissionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCapturePermissionService.swift; sourceTree = "<group>"; };
+		02000000000000000000000C /* ScreenCaptureService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCaptureService.swift; sourceTree = "<group>"; };
+		02000000000000000000000D /* CaptureConfigurationPlannerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureConfigurationPlannerTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +75,7 @@
 			children = (
 				040000000000000000000003 /* App */,
 				040000000000000000000004 /* CoreBridge */,
+				040000000000000000000007 /* Capture */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -98,8 +111,20 @@
 			isa = PBXGroup;
 			children = (
 				020000000000000000000007 /* NativeImageProbeTests.swift */,
+				02000000000000000000000D /* CaptureConfigurationPlannerTests.swift */,
 			);
 			path = Tests;
+			sourceTree = "<group>";
+		};
+		040000000000000000000007 /* Capture */ = {
+			isa = PBXGroup;
+			children = (
+				020000000000000000000009 /* CaptureModels.swift */,
+				02000000000000000000000A /* CaptureConfigurationPlanner.swift */,
+				02000000000000000000000B /* ScreenCapturePermissionService.swift */,
+				02000000000000000000000C /* ScreenCaptureService.swift */,
+			);
+			path = Capture;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -188,6 +213,10 @@
 				010000000000000000000002 /* ContentView.swift in Sources */,
 				010000000000000000000003 /* BobrshotCore.swift in Sources */,
 				010000000000000000000005 /* NativeImageProbe.swift in Sources */,
+				01000000000000000000000A /* CaptureModels.swift in Sources */,
+				01000000000000000000000B /* CaptureConfigurationPlanner.swift in Sources */,
+				01000000000000000000000C /* ScreenCapturePermissionService.swift in Sources */,
+				01000000000000000000000D /* ScreenCaptureService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -198,6 +227,9 @@
 				010000000000000000000008 /* BobrshotCore.swift in Sources */,
 				010000000000000000000007 /* NativeImageProbe.swift in Sources */,
 				010000000000000000000006 /* NativeImageProbeTests.swift in Sources */,
+				01000000000000000000000F /* CaptureModels.swift in Sources */,
+				010000000000000000000010 /* CaptureConfigurationPlanner.swift in Sources */,
+				01000000000000000000000E /* CaptureConfigurationPlannerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
