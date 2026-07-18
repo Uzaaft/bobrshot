@@ -1,5 +1,7 @@
 const std = @import("std");
 
+pub const media = @import("media.zig");
+
 pub const Version = extern struct {
     major: u16,
     minor: u16,
@@ -27,4 +29,8 @@ test "the C ABI reports the core version" {
     try std.testing.expectEqual(@as(u16, 0), version.major);
     try std.testing.expectEqual(@as(u16, 1), version.minor);
     try std.testing.expectEqual(@as(u16, 0), version.patch);
+}
+
+test {
+    std.testing.refAllDecls(media);
 }
