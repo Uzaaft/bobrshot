@@ -15,8 +15,7 @@ final class BobrshotAppModel: ObservableObject {
     private var drafts: [UUID: ScreenshotDraft] = [:]
 
     private let selectionController = CaptureSelectionOverlayController()
-    private let defaults: UserDefaults
-    private let permissionRequestedKey = "ScreenCapturePermissionRequested"
+    private var requestedPermissionThisLaunch = false
     private lazy var globalHotKeys = GlobalHotKeyController(
         actions: GlobalHotKeyActions(
             captureRegion: { [weak self] in self?.capture(mode: .region) },
@@ -26,8 +25,7 @@ final class BobrshotAppModel: ObservableObject {
         )
     )
 
-    init(defaults: UserDefaults = .standard) {
-        self.defaults = defaults
+    init() {
         do {
             let services = try BobrshotServiceContainer()
             self.services = services
@@ -60,18 +58,13 @@ final class BobrshotAppModel: ObservableObject {
 
     func managePermission() {
         guard let services else { return }
-        if permission == .denied {
+        refreshPermission()
+        if permission == .authorized { return }
+        if requestedPermissionThisLaunch {
             openScreenRecordingSettings()
             return
         }
-
-        defaults.set(true, forKey: permissionRequestedKey)
-        updatePermission(using: services.screenshots.requestPermission())
-        if permission == .denied {
-            operationStatus = .failed(
-                "Enable Screen Recording for Bobrshot in System Settings, then reopen the app."
-            )
-        }
+        requestPermission(using: services)
     }
 
     func capture(mode: CaptureSelectionMode) {
@@ -257,13 +250,13 @@ final class BobrshotAppModel: ObservableObject {
 
     private func ensureAuthorized() -> Bool {
         refreshPermission()
-        guard permission == .authorized else {
-            operationStatus = .failed(
-                "Screen Recording access is required. Use the permission command in the Bobrshot menu."
-            )
-            return false
+        if permission == .authorized { return true }
+        guard let services else { return false }
+        if !requestedPermissionThisLaunch {
+            return requestPermission(using: services)
         }
-        return true
+        presentPermissionDeniedAlert()
+        return false
     }
 
     private func updatePermission(using status: ScreenCapturePermission) {
@@ -274,8 +267,36 @@ final class BobrshotAppModel: ObservableObject {
                 operationStatus = .idle
             }
         case .denied:
-            permission =
-                defaults.bool(forKey: permissionRequestedKey) ? .denied : .notDetermined
+            permission = requestedPermissionThisLaunch ? .denied : .notDetermined
+        }
+    }
+
+    @discardableResult
+    private func requestPermission(using services: BobrshotServiceContainer) -> Bool {
+        requestedPermissionThisLaunch = true
+        NSApp.activate(ignoringOtherApps: true)
+        updatePermission(using: services.screenshots.requestPermission())
+        guard permission == .authorized else {
+            operationStatus = .failed(
+                "Screen Recording access was not enabled. After allowing access, quit and reopen Bobrshot."
+            )
+            presentPermissionDeniedAlert()
+            return false
+        }
+        operationStatus = .idle
+        return true
+    }
+
+    private func presentPermissionDeniedAlert() {
+        let alert = NSAlert()
+        alert.messageText = "Screen Recording Access Required"
+        alert.informativeText =
+            "Allow Bobrshot to capture your screen in System Settings, then quit and reopen Bobrshot."
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: "Open System Settings")
+        alert.addButton(withTitle: "Cancel")
+        if alert.runModal() == .alertFirstButtonReturn {
+            openScreenRecordingSettings()
         }
     }
 
