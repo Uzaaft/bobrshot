@@ -35,6 +35,16 @@
 		01000000000000000000001B /* RecordingConfigurationPlanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02000000000000000000000F /* RecordingConfigurationPlanner.swift */; };
 		01000000000000000000001C /* ScreenshotExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000011 /* ScreenshotExportService.swift */; };
 		01000000000000000000001D /* CaptureHistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000013 /* CaptureHistoryStore.swift */; };
+		01000000000000000000001E /* AnnotationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000017 /* AnnotationModels.swift */; };
+		01000000000000000000001F /* AnnotationRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000018 /* AnnotationRenderer.swift */; };
+		010000000000000000000020 /* SelectionGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000019 /* SelectionGeometry.swift */; };
+		010000000000000000000021 /* CaptureSelectionStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02000000000000000000001A /* CaptureSelectionStateMachine.swift */; };
+		010000000000000000000022 /* AnnotationEditorStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02000000000000000000001B /* AnnotationEditorStateTests.swift */; };
+		010000000000000000000023 /* CaptureSelectionStateMachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02000000000000000000001C /* CaptureSelectionStateMachineTests.swift */; };
+		010000000000000000000024 /* AnnotationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000017 /* AnnotationModels.swift */; };
+		010000000000000000000025 /* AnnotationRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000018 /* AnnotationRenderer.swift */; };
+		010000000000000000000026 /* SelectionGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000019 /* SelectionGeometry.swift */; };
+		010000000000000000000027 /* CaptureSelectionStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02000000000000000000001A /* CaptureSelectionStateMachine.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -60,6 +70,12 @@
 		020000000000000000000014 /* RecordingConfigurationPlannerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingConfigurationPlannerTests.swift; sourceTree = "<group>"; };
 		020000000000000000000015 /* ScreenshotExportServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotExportServiceTests.swift; sourceTree = "<group>"; };
 		020000000000000000000016 /* CaptureHistoryStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureHistoryStoreTests.swift; sourceTree = "<group>"; };
+		020000000000000000000017 /* AnnotationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationModels.swift; sourceTree = "<group>"; };
+		020000000000000000000018 /* AnnotationRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationRenderer.swift; sourceTree = "<group>"; };
+		020000000000000000000019 /* SelectionGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionGeometry.swift; sourceTree = "<group>"; };
+		02000000000000000000001A /* CaptureSelectionStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureSelectionStateMachine.swift; sourceTree = "<group>"; };
+		02000000000000000000001B /* AnnotationEditorStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationEditorStateTests.swift; sourceTree = "<group>"; };
+		02000000000000000000001C /* CaptureSelectionStateMachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureSelectionStateMachineTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,6 +116,8 @@
 				040000000000000000000007 /* Capture */,
 				040000000000000000000008 /* Recording */,
 				040000000000000000000009 /* Library */,
+				04000000000000000000000A /* Editing */,
+				04000000000000000000000B /* Selection */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -139,6 +157,8 @@
 				020000000000000000000014 /* RecordingConfigurationPlannerTests.swift */,
 				020000000000000000000015 /* ScreenshotExportServiceTests.swift */,
 				020000000000000000000016 /* CaptureHistoryStoreTests.swift */,
+				02000000000000000000001B /* AnnotationEditorStateTests.swift */,
+				02000000000000000000001C /* CaptureSelectionStateMachineTests.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -172,6 +192,24 @@
 				020000000000000000000013 /* CaptureHistoryStore.swift */,
 			);
 			path = Library;
+			sourceTree = "<group>";
+		};
+		04000000000000000000000A /* Editing */ = {
+			isa = PBXGroup;
+			children = (
+				020000000000000000000017 /* AnnotationModels.swift */,
+				020000000000000000000018 /* AnnotationRenderer.swift */,
+			);
+			path = Editing;
+			sourceTree = "<group>";
+		};
+		04000000000000000000000B /* Selection */ = {
+			isa = PBXGroup;
+			children = (
+				020000000000000000000019 /* SelectionGeometry.swift */,
+				02000000000000000000001A /* CaptureSelectionStateMachine.swift */,
+			);
+			path = Selection;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -270,6 +308,10 @@
 				010000000000000000000014 /* ScreenshotExportService.swift in Sources */,
 				010000000000000000000015 /* ScreenshotClipboard.swift in Sources */,
 				010000000000000000000016 /* CaptureHistoryStore.swift in Sources */,
+				01000000000000000000001E /* AnnotationModels.swift in Sources */,
+				01000000000000000000001F /* AnnotationRenderer.swift in Sources */,
+				010000000000000000000020 /* SelectionGeometry.swift in Sources */,
+				010000000000000000000021 /* CaptureSelectionStateMachine.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -290,6 +332,12 @@
 				010000000000000000000017 /* RecordingConfigurationPlannerTests.swift in Sources */,
 				010000000000000000000018 /* ScreenshotExportServiceTests.swift in Sources */,
 				010000000000000000000019 /* CaptureHistoryStoreTests.swift in Sources */,
+				010000000000000000000024 /* AnnotationModels.swift in Sources */,
+				010000000000000000000025 /* AnnotationRenderer.swift in Sources */,
+				010000000000000000000026 /* SelectionGeometry.swift in Sources */,
+				010000000000000000000027 /* CaptureSelectionStateMachine.swift in Sources */,
+				010000000000000000000022 /* AnnotationEditorStateTests.swift in Sources */,
+				010000000000000000000023 /* CaptureSelectionStateMachineTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
