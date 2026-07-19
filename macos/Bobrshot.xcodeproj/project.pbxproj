@@ -45,6 +45,10 @@
 		010000000000000000000025 /* AnnotationRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000018 /* AnnotationRenderer.swift */; };
 		010000000000000000000026 /* SelectionGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000019 /* SelectionGeometry.swift */; };
 		010000000000000000000027 /* CaptureSelectionStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02000000000000000000001A /* CaptureSelectionStateMachine.swift */; };
+		010000000000000000000028 /* ScreenshotDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02000000000000000000001D /* ScreenshotDraft.swift */; };
+		010000000000000000000029 /* ScreenshotWorkflowService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02000000000000000000001E /* ScreenshotWorkflowService.swift */; };
+		01000000000000000000002A /* ScreenshotDraftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02000000000000000000001F /* ScreenshotDraftTests.swift */; };
+		01000000000000000000002B /* ScreenshotDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02000000000000000000001D /* ScreenshotDraft.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -76,6 +80,9 @@
 		02000000000000000000001A /* CaptureSelectionStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureSelectionStateMachine.swift; sourceTree = "<group>"; };
 		02000000000000000000001B /* AnnotationEditorStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationEditorStateTests.swift; sourceTree = "<group>"; };
 		02000000000000000000001C /* CaptureSelectionStateMachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureSelectionStateMachineTests.swift; sourceTree = "<group>"; };
+		02000000000000000000001D /* ScreenshotDraft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotDraft.swift; sourceTree = "<group>"; };
+		02000000000000000000001E /* ScreenshotWorkflowService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotWorkflowService.swift; sourceTree = "<group>"; };
+		02000000000000000000001F /* ScreenshotDraftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotDraftTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,6 +125,7 @@
 				040000000000000000000009 /* Library */,
 				04000000000000000000000A /* Editing */,
 				04000000000000000000000B /* Selection */,
+				04000000000000000000000C /* Workflow */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -159,6 +167,7 @@
 				020000000000000000000016 /* CaptureHistoryStoreTests.swift */,
 				02000000000000000000001B /* AnnotationEditorStateTests.swift */,
 				02000000000000000000001C /* CaptureSelectionStateMachineTests.swift */,
+				02000000000000000000001F /* ScreenshotDraftTests.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -210,6 +219,15 @@
 				02000000000000000000001A /* CaptureSelectionStateMachine.swift */,
 			);
 			path = Selection;
+			sourceTree = "<group>";
+		};
+		04000000000000000000000C /* Workflow */ = {
+			isa = PBXGroup;
+			children = (
+				02000000000000000000001D /* ScreenshotDraft.swift */,
+				02000000000000000000001E /* ScreenshotWorkflowService.swift */,
+			);
+			path = Workflow;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -312,6 +330,8 @@
 				01000000000000000000001F /* AnnotationRenderer.swift in Sources */,
 				010000000000000000000020 /* SelectionGeometry.swift in Sources */,
 				010000000000000000000021 /* CaptureSelectionStateMachine.swift in Sources */,
+				010000000000000000000028 /* ScreenshotDraft.swift in Sources */,
+				010000000000000000000029 /* ScreenshotWorkflowService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -338,6 +358,8 @@
 				010000000000000000000027 /* CaptureSelectionStateMachine.swift in Sources */,
 				010000000000000000000022 /* AnnotationEditorStateTests.swift in Sources */,
 				010000000000000000000023 /* CaptureSelectionStateMachineTests.swift in Sources */,
+				01000000000000000000002B /* ScreenshotDraft.swift in Sources */,
+				01000000000000000000002A /* ScreenshotDraftTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
