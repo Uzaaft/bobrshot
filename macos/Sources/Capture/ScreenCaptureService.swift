@@ -178,10 +178,6 @@ final class ScreenCaptureService {
                     processID: window.owningApplication?.processID
                 )
             }
-            .sorted {
-                ($0.applicationName ?? "", $0.title, $0.id)
-                    < ($1.applicationName ?? "", $1.title, $1.id)
-            }
 
         return CaptureCatalog(displays: displays, windows: windows)
     }
