@@ -54,6 +54,29 @@ final class CaptureHistoryStoreTests: XCTestCase {
         }
     }
 
+    func testStoresScreenRecordingsBesideScreenshots() async throws {
+        let directory = temporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let store = try CaptureHistoryStore(
+            directory: directory,
+            clock: { Date(timeIntervalSince1970: 9_876) }
+        )
+        let recording = ScreenRecordingResult(
+            url: directory.appendingPathComponent("recording.mov"),
+            duration: 4.5,
+            videoFrameCount: 270,
+            fileSize: 12_345
+        )
+
+        let entry = try await store.add(recording, codec: .hevc)
+
+        XCTAssertEqual(entry.kind, .screenRecording(.hevc))
+        XCTAssertNil(entry.format)
+        XCTAssertEqual(entry.byteCount, 12_345)
+        let entries = try await store.entries()
+        XCTAssertEqual(entries, [entry])
+    }
+
     private func export(at directory: URL, name: String) -> ExportedScreenshot {
         ExportedScreenshot(
             url: directory.appendingPathComponent(name),

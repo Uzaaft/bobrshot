@@ -1,16 +1,46 @@
 import Foundation
 
+enum CaptureArtifactKind: Codable, Equatable, Hashable, Sendable {
+    case screenshot(ScreenshotFileFormat)
+    case screenRecording(RecordingVideoCodec)
+}
+
 struct CaptureHistoryEntry: Codable, Identifiable, Hashable, Sendable {
     let id: UUID
     let createdAt: Date
     let fileURL: URL
-    let format: ScreenshotFileFormat
+    let kind: CaptureArtifactKind
     let byteCount: Int
     let pixelWidth: Int?
     let pixelHeight: Int?
     /// Present for files exported outside the app container. Plain URLs alone do not preserve
     /// sandbox access across launches.
     let securityScopedBookmark: Data?
+
+    var format: ScreenshotFileFormat? {
+        guard case let .screenshot(format) = kind else { return nil }
+        return format
+    }
+
+    init(
+        id: UUID = UUID(),
+        createdAt: Date,
+        fileURL: URL,
+        kind: CaptureArtifactKind,
+        byteCount: Int,
+        pixelWidth: Int? = nil,
+        pixelHeight: Int? = nil,
+        securityScopedBookmark: Data? = nil
+    ) {
+        self.id = id
+        self.createdAt = createdAt
+        self.fileURL = fileURL
+        self.kind = kind
+        self.byteCount = byteCount
+        self.pixelWidth = pixelWidth
+        self.pixelHeight = pixelHeight
+        self.securityScopedBookmark = securityScopedBookmark
+    }
 
     init(
         id: UUID = UUID(),
@@ -22,14 +52,58 @@ struct CaptureHistoryEntry: Codable, Identifiable, Hashable, Sendable {
         pixelHeight: Int? = nil,
         securityScopedBookmark: Data? = nil
     ) {
-        self.id = id
-        self.createdAt = createdAt
-        self.fileURL = fileURL
-        self.format = format
-        self.byteCount = byteCount
-        self.pixelWidth = pixelWidth
-        self.pixelHeight = pixelHeight
-        self.securityScopedBookmark = securityScopedBookmark
+        self.init(
+            id: id,
+            createdAt: createdAt,
+            fileURL: fileURL,
+            kind: .screenshot(format),
+            byteCount: byteCount,
+            pixelWidth: pixelWidth,
+            pixelHeight: pixelHeight,
+            securityScopedBookmark: securityScopedBookmark
+        )
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case createdAt
+        case fileURL
+        case kind
+        case format
+        case byteCount
+        case pixelWidth
+        case pixelHeight
+        case securityScopedBookmark
+    }
+
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        createdAt = try container.decode(Date.self, forKey: .createdAt)
+        fileURL = try container.decode(URL.self, forKey: .fileURL)
+        if let decodedKind = try container.decodeIfPresent(CaptureArtifactKind.self, forKey: .kind)
+        {
+            kind = decodedKind
+        } else {
+            kind = .screenshot(try container.decode(ScreenshotFileFormat.self, forKey: .format))
+        }
+        byteCount = try container.decode(Int.self, forKey: .byteCount)
+        pixelWidth = try container.decodeIfPresent(Int.self, forKey: .pixelWidth)
+        pixelHeight = try container.decodeIfPresent(Int.self, forKey: .pixelHeight)
+        securityScopedBookmark = try container.decodeIfPresent(
+            Data.self, forKey: .securityScopedBookmark)
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encode(fileURL, forKey: .fileURL)
+        try container.encode(kind, forKey: .kind)
+        try container.encode(byteCount, forKey: .byteCount)
+        try container.encodeIfPresent(pixelWidth, forKey: .pixelWidth)
+        try container.encodeIfPresent(pixelHeight, forKey: .pixelHeight)
+        try container.encodeIfPresent(securityScopedBookmark, forKey: .securityScopedBookmark)
     }
 }
 
@@ -38,6 +112,7 @@ enum CaptureHistoryError: Error, Equatable, LocalizedError {
     case corruptStore(String)
     case persistenceFailed(String)
     case securityScopedBookmarkFailed(String)
+    case invalidFileSize(Int64)
 
     var errorDescription: String? {
         switch self {
@@ -49,6 +124,8 @@ enum CaptureHistoryError: Error, Equatable, LocalizedError {
             "Capture history could not be saved: \(message)"
         case let .securityScopedBookmarkFailed(message):
             "A capture file bookmark could not be resolved: \(message)"
+        case let .invalidFileSize(size):
+            "The capture file size \(size) cannot be represented in history."
         }
     }
 }
@@ -60,6 +137,8 @@ actor CaptureHistoryStore {
         let version: Int
         var entries: [CaptureHistoryEntry]
     }
+
+    private static let archiveVersion = 2
 
     private let archiveURL: URL
     private let maximumEntryCount: Int
@@ -94,13 +173,37 @@ actor CaptureHistoryStore {
         let entry = CaptureHistoryEntry(
             createdAt: clock(),
             fileURL: export.url,
-            format: export.format,
+            kind: .screenshot(export.format),
             byteCount: export.byteCount,
             pixelWidth: pixelWidth,
             pixelHeight: pixelHeight,
             securityScopedBookmark: export.securityScopedBookmark
         )
         current.removeAll { $0.id == entry.id }
+        current.append(entry)
+        current.sort(by: Self.newestFirst)
+        if current.count > maximumEntryCount {
+            current.removeLast(current.count - maximumEntryCount)
+        }
+        try persist(current)
+        return entry
+    }
+
+    @discardableResult
+    func add(
+        _ recording: ScreenRecordingResult,
+        codec: RecordingVideoCodec
+    ) throws -> CaptureHistoryEntry {
+        guard let byteCount = Int(exactly: recording.fileSize), byteCount >= 0 else {
+            throw CaptureHistoryError.invalidFileSize(recording.fileSize)
+        }
+        var current = try loadIfNeeded()
+        let entry = CaptureHistoryEntry(
+            createdAt: clock(),
+            fileURL: recording.url,
+            kind: .screenRecording(codec),
+            byteCount: byteCount
+        )
         current.append(entry)
         current.sort(by: Self.newestFirst)
         if current.count > maximumEntryCount {
@@ -196,14 +299,14 @@ actor CaptureHistoryStore {
                 Archive.self,
                 from: Data(contentsOf: archiveURL)
             )
-            guard archive.version == 1 else {
+            guard (1...Self.archiveVersion).contains(archive.version) else {
                 throw CaptureHistoryError.corruptStore(
                     "Unsupported archive version \(archive.version).")
             }
             let bounded = Array(
                 archive.entries.sorted(by: Self.newestFirst).prefix(maximumEntryCount))
             cachedEntries = bounded
-            if bounded.count != archive.entries.count {
+            if bounded.count != archive.entries.count || archive.version != Self.archiveVersion {
                 try persist(bounded)
             }
             return bounded
@@ -223,7 +326,9 @@ actor CaptureHistoryStore {
             let encoder = JSONEncoder()
             encoder.dateEncodingStrategy = .iso8601
             encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-            let data = try encoder.encode(Archive(version: 1, entries: entries))
+            let data = try encoder.encode(
+                Archive(version: Self.archiveVersion, entries: entries)
+            )
             try data.write(to: archiveURL, options: .atomic)
             cachedEntries = entries
         } catch {
