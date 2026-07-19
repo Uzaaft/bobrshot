@@ -126,6 +126,13 @@ enum BobrshotCore {
             guard let format = CoreImageFormat(encodedValue: outputFormat) else {
                 throw CoreOptimizationError.internalFailure(status: BobrshotStatusInternal)
             }
+            if options.onlyIfSmaller, outputLength >= data.count {
+                return CoreOptimizationResult(
+                    data: data,
+                    format: format,
+                    originalByteCount: data.count
+                )
+            }
 
             var output = Data(count: outputLength)
             try output.withUnsafeMutableBytes { outputBuffer in

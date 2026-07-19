@@ -70,4 +70,20 @@ final class NativeImageProbeTests: XCTestCase {
             XCTAssertEqual(error as? CoreOptimizationError, .invalidData)
         }
     }
+
+    func testZigOptimizationReusesUnchangedInputStorage() throws {
+        var data = Data(repeating: 0x61, count: 4096)
+        data.replaceSubrange(0..<6, with: Data("GIF89a".utf8))
+
+        let result = try BobrshotCore.optimizeImage(data)
+        let sharesStorage = data.withUnsafeBytes { input in
+            result.data.withUnsafeBytes { output in
+                input.baseAddress == output.baseAddress
+            }
+        }
+
+        XCTAssertEqual(result.data, data)
+        XCTAssertEqual(result.bytesRemoved, 0)
+        XCTAssertTrue(sharesStorage)
+    }
 }

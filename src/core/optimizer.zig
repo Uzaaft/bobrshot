@@ -35,14 +35,12 @@ pub fn measure(bytes: []const u8, options: Options) OptimizeError!usize {
 /// Fully validates `bytes` and writes the optimized image into caller-owned
 /// memory. Returns the number of initialized bytes in `output`.
 pub fn optimizeInto(bytes: []const u8, options: Options, output: []u8) OptimizeError!usize {
-    const required = try measure(bytes, options);
-    if (output.len < required) return error.OutputTooSmall;
-
     const format = media.detectImageFormat(bytes) orelse return error.UnsupportedFormat;
     return switch (format) {
         .png => processPng(bytes, options, output),
         .jpeg => processJpeg(bytes, options, output),
         else => {
+            if (output.len < bytes.len) return error.OutputTooSmall;
             @memmove(output[0..bytes.len], bytes);
             return bytes.len;
         },
@@ -277,22 +275,8 @@ fn readU32Be(bytes: []const u8) u32 {
         bytes[3];
 }
 
-fn updatePngCrc(crc: u32, bytes: []const u8) u32 {
-    var current = crc;
-    for (bytes) |byte| {
-        current ^= byte;
-        for (0..8) |_| {
-            current = if (current & 1 != 0)
-                (current >> 1) ^ 0xedb88320
-            else
-                current >> 1;
-        }
-    }
-    return current;
-}
-
 fn pngCrc32(bytes: []const u8) u32 {
-    return ~updatePngCrc(0xffffffff, bytes);
+    return std.hash.crc.Crc32.hash(bytes);
 }
 
 fn appendPngChunk(list: *std.ArrayList(u8), allocator: std.mem.Allocator, chunk_type: *const [4]u8, data: []const u8) !void {
@@ -301,11 +285,11 @@ fn appendPngChunk(list: *std.ArrayList(u8), allocator: std.mem.Allocator, chunk_
     try list.appendSlice(allocator, &length);
     try list.appendSlice(allocator, chunk_type);
     try list.appendSlice(allocator, data);
-    var crc: u32 = 0xffffffff;
-    crc = updatePngCrc(crc, chunk_type);
-    crc = updatePngCrc(crc, data);
+    var crc = std.hash.crc.Crc32.init();
+    crc.update(chunk_type);
+    crc.update(data);
     var checksum: [4]u8 = undefined;
-    std.mem.writeInt(u32, &checksum, ~crc, .big);
+    std.mem.writeInt(u32, &checksum, crc.final(), .big);
     try list.appendSlice(allocator, &checksum);
 }
 
@@ -397,4 +381,22 @@ test "allocator-free measurement and output APIs agree" {
     try std.testing.expectEqual(gif.len, written);
     try std.testing.expectEqualSlices(u8, gif, output[0..written]);
     try std.testing.expectError(error.OutputTooSmall, optimizeInto(gif, .{}, output[0 .. output.len - 1]));
+}
+
+test "allocator-free output accepts an input-sized buffer when metadata is removed" {
+    const allocator = std.testing.allocator;
+    var input: std.ArrayList(u8) = .empty;
+    defer input.deinit(allocator);
+    try input.appendSlice(allocator, png_signature);
+    try appendPngChunk(&input, allocator, "IHDR", &([_]u8{ 0, 0, 0, 1, 0, 0, 0, 1, 8, 2, 0, 0, 0 }));
+    try appendPngChunk(&input, allocator, "tEXt", "Author\x00Bob");
+    try appendPngChunk(&input, allocator, "IDAT", "pixels");
+    try appendPngChunk(&input, allocator, "IEND", "");
+
+    const output = try allocator.alloc(u8, input.items.len);
+    defer allocator.free(output);
+    const written = try optimizeInto(input.items, .{}, output);
+
+    try std.testing.expect(written < input.items.len);
+    try std.testing.expectEqual(null, std.mem.indexOf(u8, output[0..written], "Author"));
 }

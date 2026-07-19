@@ -111,26 +111,45 @@ export fn bobrshot_image_optimize_v1(
         .strip_jpeg_xmp = strip_metadata,
         .strip_jpeg_comments = strip_metadata,
     };
-    const measured_length = optimizer.measure(input, options) catch |err| {
-        return @intFromEnum(statusForOptimizeError(err));
-    };
-    const preserve_original = request.flags & optimize_flag_only_if_smaller != 0 and
-        measured_length >= input.len;
-    const required_length = if (preserve_original) input.len else measured_length;
-    result_length.* = required_length;
-    result_format.* = @intFromEnum(source_format);
-
-    const output_pointer = output_bytes orelse return @intFromEnum(Status.ok);
-    if (output_capacity < required_length) return @intFromEnum(Status.buffer_too_small);
-    const output = output_pointer[0..output_capacity];
-    if (preserve_original) {
-        @memmove(output[0..input.len], input);
-    } else {
-        const written = optimizer.optimizeInto(input, options, output) catch |err| {
+    const output_pointer = output_bytes orelse {
+        const measured_length = optimizer.measure(input, options) catch |err| {
             return @intFromEnum(statusForOptimizeError(err));
         };
-        if (written != required_length) return @intFromEnum(Status.internal);
+        const preserve_original = request.flags & optimize_flag_only_if_smaller != 0 and
+            measured_length >= input.len;
+        result_length.* = if (preserve_original) input.len else measured_length;
+        result_format.* = @intFromEnum(source_format);
+        return @intFromEnum(Status.ok);
+    };
+    const output = output_pointer[0..output_capacity];
+    const written = optimizer.optimizeInto(input, options, output) catch |err| {
+        if (err != error.OutputTooSmall) {
+            return @intFromEnum(statusForOptimizeError(err));
+        }
+
+        const measured_length = optimizer.measure(input, options) catch |measure_err| {
+            return @intFromEnum(statusForOptimizeError(measure_err));
+        };
+        const preserve_original = request.flags & optimize_flag_only_if_smaller != 0 and
+            measured_length >= input.len;
+        const required_length = if (preserve_original) input.len else measured_length;
+        result_length.* = required_length;
+        result_format.* = @intFromEnum(source_format);
+        if (!preserve_original or output_capacity < input.len) {
+            return @intFromEnum(Status.buffer_too_small);
+        }
+        @memmove(output[0..input.len], input);
+        return @intFromEnum(Status.ok);
+    };
+
+    const preserve_original = request.flags & optimize_flag_only_if_smaller != 0 and
+        written >= input.len;
+    if (preserve_original and written != input.len) {
+        if (output_capacity < input.len) return @intFromEnum(Status.buffer_too_small);
+        @memmove(output[0..input.len], input);
     }
+    result_length.* = if (preserve_original) input.len else written;
+    result_format.* = @intFromEnum(source_format);
     return @intFromEnum(Status.ok);
 }
 
