@@ -9,6 +9,7 @@ final class BobrshotAppModel: ObservableObject {
     @Published private(set) var operationStatus: MenuBarOperationStatus = .idle
     @Published private(set) var historyState: CaptureHistoryPresentationState = .loading
     @Published private(set) var recentEntries: [CaptureHistoryEntry] = []
+    @Published private(set) var pendingEditorID: UUID?
 
     private(set) var services: BobrshotServiceContainer?
     private var drafts: [UUID: ScreenshotDraft] = [:]
@@ -16,6 +17,14 @@ final class BobrshotAppModel: ObservableObject {
     private let selectionController = CaptureSelectionOverlayController()
     private let defaults: UserDefaults
     private let permissionRequestedKey = "ScreenCapturePermissionRequested"
+    private lazy var globalHotKeys = GlobalHotKeyController(
+        actions: GlobalHotKeyActions(
+            captureRegion: { [weak self] in self?.capture(mode: .region) },
+            captureWindow: { [weak self] in self?.capture(mode: .window) },
+            captureDisplay: { [weak self] in self?.capture(mode: .display) },
+            recordRegion: { [weak self] in self?.startRecording(mode: .region) }
+        )
+    )
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
@@ -28,6 +37,7 @@ final class BobrshotAppModel: ObservableObject {
             operationStatus = .failed(error.localizedDescription)
             historyState = .failed(error.localizedDescription)
         }
+        startGlobalHotKeys()
     }
 
     var storagePath: String {
@@ -64,10 +74,7 @@ final class BobrshotAppModel: ObservableObject {
         }
     }
 
-    func capture(
-        mode: CaptureSelectionMode,
-        openEditor: @escaping @MainActor (UUID) -> Void
-    ) {
+    func capture(mode: CaptureSelectionMode) {
         guard let services, beginCaptureOperation("Choose a capture target") else { return }
 
         Task {
@@ -84,7 +91,7 @@ final class BobrshotAppModel: ObservableObject {
                 let draft = try await services.screenshots.capture(target: target)
                 drafts[draft.id] = draft
                 operationStatus = .idle
-                openEditor(draft.id)
+                pendingEditorID = draft.id
             } catch {
                 operationStatus = .failed(error.localizedDescription)
             }
@@ -145,6 +152,15 @@ final class BobrshotAppModel: ObservableObject {
 
     func discardDraft(id: UUID) {
         drafts[id] = nil
+    }
+
+    func consumePendingEditor(id: UUID) {
+        guard pendingEditorID == id else { return }
+        pendingEditorID = nil
+    }
+
+    func startGlobalHotKeys() {
+        globalHotKeys.register()
     }
 
     func copyRenderedPNG(_ data: Data) throws {

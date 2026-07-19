@@ -49,14 +49,17 @@ struct BobrshotMenuBarView: View {
         Button("Capture Region", systemImage: "viewfinder") {
             actions.captureRegion()
         }
+        .keyboardShortcut("1", modifiers: [.command, .shift, .control])
 
         Button("Capture Window", systemImage: "macwindow") {
             actions.captureWindow()
         }
+        .keyboardShortcut("2", modifiers: [.command, .shift, .control])
 
         Button("Capture Display", systemImage: "display") {
             actions.captureDisplay()
         }
+        .keyboardShortcut("3", modifiers: [.command, .shift, .control])
     }
 
     @ViewBuilder
@@ -67,6 +70,7 @@ struct BobrshotMenuBarView: View {
                 Button("Record Region") {
                     actions.startRegionRecording()
                 }
+                .keyboardShortcut("4", modifiers: [.command, .shift, .control])
                 Button("Record Window") {
                     actions.startWindowRecording()
                 }

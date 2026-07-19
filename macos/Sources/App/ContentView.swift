@@ -27,6 +27,13 @@ struct ContentView: View {
                 }
             }
 
+            Section("Keyboard Shortcuts") {
+                LabeledContent("Capture Region", value: "⌃⇧⌘1")
+                LabeledContent("Capture Window", value: "⌃⇧⌘2")
+                LabeledContent("Capture Display", value: "⌃⇧⌘3")
+                LabeledContent("Record Region", value: "⌃⇧⌘4")
+            }
+
             Section("About") {
                 LabeledContent("Bobrshot Core", value: BobrshotCore.version.description)
                     .monospacedDigit()
@@ -36,6 +43,6 @@ struct ContentView: View {
         }
         .formStyle(.grouped)
         .padding(20)
-        .frame(width: 520)
+        .frame(width: 520, height: 500)
     }
 }

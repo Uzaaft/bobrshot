@@ -4,16 +4,14 @@ import SwiftUI
 @main
 @MainActor
 struct BobrshotApp: App {
+    @NSApplicationDelegateAdaptor(BobrshotAppDelegate.self) private var appDelegate
     @StateObject private var model = BobrshotAppModel()
 
     var body: some Scene {
         MenuBarExtra {
             BobrshotMenuScene(model: model)
         } label: {
-            Label(
-                model.isRecording ? "Bobrshot is recording" : "Bobrshot",
-                systemImage: model.isRecording ? "record.circle.fill" : "viewfinder"
-            )
+            BobrshotStatusLabel(model: model)
         }
         .menuBarExtraStyle(.menu)
 
@@ -45,9 +43,9 @@ private struct BobrshotMenuScene: View {
             operationStatus: model.operationStatus,
             recentEntries: model.recentEntries,
             actions: MenuBarCaptureActions(
-                captureRegion: { model.capture(mode: .region, openEditor: openEditor) },
-                captureWindow: { model.capture(mode: .window, openEditor: openEditor) },
-                captureDisplay: { model.capture(mode: .display, openEditor: openEditor) },
+                captureRegion: { model.capture(mode: .region) },
+                captureWindow: { model.capture(mode: .window) },
+                captureDisplay: { model.capture(mode: .display) },
                 startRegionRecording: { model.startRecording(mode: .region) },
                 startWindowRecording: { model.startRecording(mode: .window) },
                 startDisplayRecording: { model.startRecording(mode: .display) },
@@ -65,8 +63,22 @@ private struct BobrshotMenuScene: View {
         }
     }
 
-    private func openEditor(_ id: UUID) {
-        openWindow(id: "editor", value: id)
+}
+
+private struct BobrshotStatusLabel: View {
+    @ObservedObject var model: BobrshotAppModel
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some View {
+        Label(
+            model.isRecording ? "Bobrshot is recording" : "Bobrshot",
+            systemImage: model.isRecording ? "record.circle.fill" : "viewfinder"
+        )
+        .onChange(of: model.pendingEditorID) { _, id in
+            guard let id else { return }
+            openWindow(id: "editor", value: id)
+            model.consumePendingEditor(id: id)
+        }
     }
 }
 
