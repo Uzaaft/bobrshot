@@ -4,6 +4,7 @@ import SwiftUI
 struct BobrshotMenuBarView: View {
     let permission: MenuBarScreenCapturePermission
     let recordingStatus: MenuBarRecordingStatus
+    let operationStatus: MenuBarOperationStatus
     let recentEntries: [CaptureHistoryEntry]
     let actions: MenuBarCaptureActions
 
@@ -18,6 +19,8 @@ struct BobrshotMenuBarView: View {
             Divider()
 
             permissionCommand
+
+            operationStatusView
 
             if !recentEntries.isEmpty {
                 recentCapturesMenu
@@ -60,8 +63,16 @@ struct BobrshotMenuBarView: View {
     private var recordingCommand: some View {
         switch recordingStatus {
         case .idle:
-            Button("Start Screen Recording", systemImage: "record.circle") {
-                actions.startScreenRecording()
+            Menu("Start Screen Recording", systemImage: "record.circle") {
+                Button("Record Region") {
+                    actions.startRegionRecording()
+                }
+                Button("Record Window") {
+                    actions.startWindowRecording()
+                }
+                Button("Record Display") {
+                    actions.startDisplayRecording()
+                }
             }
         case .starting:
             Label("Starting Screen Recording…", systemImage: "record.circle")
@@ -83,8 +94,26 @@ struct BobrshotMenuBarView: View {
                 .accessibilityAddTraits(.isStaticText)
 
             Button("Try Screen Recording Again", systemImage: "arrow.clockwise") {
-                actions.startScreenRecording()
+                actions.startRegionRecording()
             }
+        }
+    }
+
+    @ViewBuilder
+    private var operationStatusView: some View {
+        switch operationStatus {
+        case .idle:
+            EmptyView()
+        case let .working(message):
+            Label(message, systemImage: "ellipsis.circle")
+                .foregroundStyle(.secondary)
+                .accessibilityAddTraits(.isStaticText)
+        case let .failed(message):
+            Label("Capture Failed", systemImage: "exclamationmark.triangle")
+                .foregroundStyle(.secondary)
+                .help(message)
+                .accessibilityLabel("Capture failed: \(message)")
+                .accessibilityAddTraits(.isStaticText)
         }
     }
 

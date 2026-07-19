@@ -57,6 +57,16 @@
 		010000000000000000000031 /* ApplicationDataPaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000020 /* ApplicationDataPaths.swift */; };
 		010000000000000000000032 /* RecordingDestinationAllocatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000025 /* RecordingDestinationAllocatorTests.swift */; };
 		010000000000000000000033 /* RecordingDestinationAllocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000022 /* RecordingDestinationAllocator.swift */; };
+		010000000000000000000034 /* BobrshotAppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000026 /* BobrshotAppModel.swift */; };
+		010000000000000000000035 /* ScreenshotEditorTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000027 /* ScreenshotEditorTool.swift */; };
+		010000000000000000000036 /* ScreenshotEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000028 /* ScreenshotEditorView.swift */; };
+		010000000000000000000037 /* BobrshotMenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000029 /* BobrshotMenuBarView.swift */; };
+		010000000000000000000038 /* CaptureHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02000000000000000000002A /* CaptureHistoryView.swift */; };
+		010000000000000000000039 /* MenuBarPresentationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02000000000000000000002B /* MenuBarPresentationModels.swift */; };
+		01000000000000000000003A /* CaptureSelectionOverlayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02000000000000000000002C /* CaptureSelectionOverlayController.swift */; };
+		01000000000000000000003B /* CaptureSelectionOverlayPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02000000000000000000002D /* CaptureSelectionOverlayPanel.swift */; };
+		01000000000000000000003C /* CaptureSelectionOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02000000000000000000002E /* CaptureSelectionOverlayView.swift */; };
+		01000000000000000000003D /* SelectionOverlayCoordinateSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02000000000000000000002F /* SelectionOverlayCoordinateSpace.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -97,6 +107,16 @@
 		020000000000000000000023 /* RecordingWorkflowService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingWorkflowService.swift; sourceTree = "<group>"; };
 		020000000000000000000024 /* ApplicationDataPathsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationDataPathsTests.swift; sourceTree = "<group>"; };
 		020000000000000000000025 /* RecordingDestinationAllocatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingDestinationAllocatorTests.swift; sourceTree = "<group>"; };
+		020000000000000000000026 /* BobrshotAppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BobrshotAppModel.swift; sourceTree = "<group>"; };
+		020000000000000000000027 /* ScreenshotEditorTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotEditorTool.swift; sourceTree = "<group>"; };
+		020000000000000000000028 /* ScreenshotEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotEditorView.swift; sourceTree = "<group>"; };
+		020000000000000000000029 /* BobrshotMenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BobrshotMenuBarView.swift; sourceTree = "<group>"; };
+		02000000000000000000002A /* CaptureHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureHistoryView.swift; sourceTree = "<group>"; };
+		02000000000000000000002B /* MenuBarPresentationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarPresentationModels.swift; sourceTree = "<group>"; };
+		02000000000000000000002C /* CaptureSelectionOverlayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureSelectionOverlayController.swift; sourceTree = "<group>"; };
+		02000000000000000000002D /* CaptureSelectionOverlayPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureSelectionOverlayPanel.swift; sourceTree = "<group>"; };
+		02000000000000000000002E /* CaptureSelectionOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureSelectionOverlayView.swift; sourceTree = "<group>"; };
+		02000000000000000000002F /* SelectionOverlayCoordinateSpace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionOverlayCoordinateSpace.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -140,6 +160,7 @@
 				04000000000000000000000A /* Editing */,
 				04000000000000000000000B /* Selection */,
 				04000000000000000000000C /* Workflow */,
+				04000000000000000000000D /* Presentation */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -149,6 +170,7 @@
 			children = (
 				020000000000000000000001 /* BobrshotApp.swift */,
 				020000000000000000000002 /* ContentView.swift */,
+				020000000000000000000026 /* BobrshotAppModel.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -248,6 +270,46 @@
 				020000000000000000000023 /* RecordingWorkflowService.swift */,
 			);
 			path = Workflow;
+			sourceTree = "<group>";
+		};
+		04000000000000000000000D /* Presentation */ = {
+			isa = PBXGroup;
+			children = (
+				04000000000000000000000E /* Editor */,
+				04000000000000000000000F /* MenuBar */,
+				040000000000000000000010 /* Selection */,
+			);
+			path = Presentation;
+			sourceTree = "<group>";
+		};
+		04000000000000000000000E /* Editor */ = {
+			isa = PBXGroup;
+			children = (
+				020000000000000000000027 /* ScreenshotEditorTool.swift */,
+				020000000000000000000028 /* ScreenshotEditorView.swift */,
+			);
+			path = Editor;
+			sourceTree = "<group>";
+		};
+		04000000000000000000000F /* MenuBar */ = {
+			isa = PBXGroup;
+			children = (
+				020000000000000000000029 /* BobrshotMenuBarView.swift */,
+				02000000000000000000002A /* CaptureHistoryView.swift */,
+				02000000000000000000002B /* MenuBarPresentationModels.swift */,
+			);
+			path = MenuBar;
+			sourceTree = "<group>";
+		};
+		040000000000000000000010 /* Selection */ = {
+			isa = PBXGroup;
+			children = (
+				02000000000000000000002C /* CaptureSelectionOverlayController.swift */,
+				02000000000000000000002D /* CaptureSelectionOverlayPanel.swift */,
+				02000000000000000000002E /* CaptureSelectionOverlayView.swift */,
+				02000000000000000000002F /* SelectionOverlayCoordinateSpace.swift */,
+			);
+			path = Selection;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -356,6 +418,16 @@
 				01000000000000000000002D /* BobrshotServiceContainer.swift in Sources */,
 				01000000000000000000002E /* RecordingDestinationAllocator.swift in Sources */,
 				01000000000000000000002F /* RecordingWorkflowService.swift in Sources */,
+				010000000000000000000034 /* BobrshotAppModel.swift in Sources */,
+				010000000000000000000035 /* ScreenshotEditorTool.swift in Sources */,
+				010000000000000000000036 /* ScreenshotEditorView.swift in Sources */,
+				010000000000000000000037 /* BobrshotMenuBarView.swift in Sources */,
+				010000000000000000000038 /* CaptureHistoryView.swift in Sources */,
+				010000000000000000000039 /* MenuBarPresentationModels.swift in Sources */,
+				01000000000000000000003A /* CaptureSelectionOverlayController.swift in Sources */,
+				01000000000000000000003B /* CaptureSelectionOverlayPanel.swift in Sources */,
+				01000000000000000000003C /* CaptureSelectionOverlayView.swift in Sources */,
+				01000000000000000000003D /* SelectionOverlayCoordinateSpace.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -426,6 +498,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_LSUIElement = YES;
 				MARKETING_VERSION = 0.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.uzaaft.bobrshot;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -442,6 +515,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_LSUIElement = YES;
 				MARKETING_VERSION = 0.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.uzaaft.bobrshot;
 				PRODUCT_NAME = "$(TARGET_NAME)";

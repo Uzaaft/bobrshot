@@ -1,29 +1,41 @@
 import SwiftUI
 
 struct ContentView: View {
-    var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Image(systemName: "viewfinder")
-                .font(.system(size: 40, weight: .medium))
-                .foregroundStyle(.tint)
+    @ObservedObject var model: BobrshotAppModel
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Bobrshot")
-                    .font(.title.bold())
-                Text("Native capture tools are being assembled.")
-                    .foregroundStyle(.secondary)
+    var body: some View {
+        Form {
+            Section("Screen Recording") {
+                LabeledContent("Access", value: model.permission.title)
+                if model.permission.needsAction {
+                    Button(model.permission == .denied ? "Open System Settings" : "Request Access")
+                    {
+                        model.managePermission()
+                    }
+                }
             }
 
-            Divider()
+            Section("Storage") {
+                LabeledContent("Location") {
+                    Text(model.storagePath)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                        .help(model.storagePath)
+                }
+                Button("Show in Finder") {
+                    model.openStorageFolder()
+                }
+            }
 
-            LabeledContent("Core", value: BobrshotCore.version.description)
-                .font(.callout.monospacedDigit())
+            Section("About") {
+                LabeledContent("Bobrshot Core", value: BobrshotCore.version.description)
+                    .monospacedDigit()
+                Text("A fast, native capture tool for macOS power users.")
+                    .foregroundStyle(.secondary)
+            }
         }
-        .padding(24)
-        .frame(width: 420)
+        .formStyle(.grouped)
+        .padding(20)
+        .frame(width: 520)
     }
-}
-
-#Preview {
-    ContentView()
 }

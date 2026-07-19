@@ -50,12 +50,20 @@ enum MenuBarRecordingStatus: Equatable, Sendable {
     case failed(String)
 }
 
+enum MenuBarOperationStatus: Equatable, Sendable {
+    case idle
+    case working(String)
+    case failed(String)
+}
+
 @MainActor
 struct MenuBarCaptureActions {
     let captureRegion: () -> Void
     let captureWindow: () -> Void
     let captureDisplay: () -> Void
-    let startScreenRecording: () -> Void
+    let startRegionRecording: () -> Void
+    let startWindowRecording: () -> Void
+    let startDisplayRecording: () -> Void
     let stopScreenRecording: () -> Void
     let manageScreenCapturePermission: () -> Void
     let openHistory: () -> Void

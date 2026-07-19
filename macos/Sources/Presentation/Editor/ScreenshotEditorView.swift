@@ -1,8 +1,9 @@
 import AppKit
 import SwiftUI
 
+@MainActor
 struct ScreenshotEditorView: View {
-    typealias ExportAction = (Data) throws -> Void
+    typealias ExportAction = (Data) async throws -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.colorSchemeContrast) private var colorSchemeContrast
@@ -17,6 +18,7 @@ struct ScreenshotEditorView: View {
     @State private var errorMessage: String?
     @State private var undoDepth: Int
     @State private var redoDepth = 0
+    @State private var exportInProgress = false
 
     private let onCopy: ExportAction
     private let onSave: ExportAction
@@ -195,19 +197,21 @@ struct ScreenshotEditorView: View {
                 .keyboardShortcut(.cancelAction)
 
             Button {
-                performExport(onCopy)
+                Task { await performExport(onCopy) }
             } label: {
                 Label("Copy", systemImage: "doc.on.doc")
             }
+            .disabled(exportInProgress)
             .keyboardShortcut("c", modifiers: [.command, .shift])
             .help("Copy edited screenshot (Shift-Command-C)")
 
             Button {
-                performExport(onSave)
+                Task { await performExport(onSave) }
             } label: {
                 Label("Save", systemImage: "square.and.arrow.down")
             }
             .buttonStyle(.borderedProminent)
+            .disabled(exportInProgress)
             .keyboardShortcut("s", modifiers: .command)
             .help("Save edited screenshot (Command-S)")
         }
@@ -303,9 +307,12 @@ struct ScreenshotEditorView: View {
         }
     }
 
-    private func performExport(_ action: ExportAction) {
+    private func performExport(_ action: ExportAction) async {
+        guard !exportInProgress else { return }
+        exportInProgress = true
+        defer { exportInProgress = false }
         do {
-            try action(draft.renderedPNG())
+            try await action(draft.renderedPNG())
             errorMessage = nil
         } catch {
             errorMessage = error.localizedDescription

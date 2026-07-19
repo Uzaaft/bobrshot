@@ -92,9 +92,40 @@ final class ScreenshotWorkflowService {
         directoryAccess: ExportDirectoryAccess = .appOwned
     ) async throws -> ScreenshotWorkflowExportResult {
         let rendered = try draft.renderedPNG()
+        return try await exportRenderedPNG(
+            rendered,
+            pixelWidth: draft.pixelWidth,
+            pixelHeight: draft.pixelHeight,
+            to: directory,
+            filenamePrefix: filenamePrefix,
+            optimize: optimize,
+            directoryAccess: directoryAccess
+        )
+    }
+
+    func exportRenderedPNG(
+        _ data: Data,
+        pixelWidth: Int? = nil,
+        pixelHeight: Int? = nil,
+        to directory: URL,
+        filenamePrefix: String = "Bobrshot",
+        optimize: Bool = true,
+        directoryAccess: ExportDirectoryAccess = .appOwned
+    ) async throws -> ScreenshotWorkflowExportResult {
+        let dimensions: (width: Int, height: Int)
+        if let pixelWidth, let pixelHeight {
+            dimensions = (pixelWidth, pixelHeight)
+        } else {
+            do {
+                let descriptor = try NativeImageProbe.inspect(data)
+                dimensions = (descriptor.widthPixels, descriptor.heightPixels)
+            } catch {
+                throw ScreenshotWorkflowError.invalidEncodedImage(error.localizedDescription)
+            }
+        }
         let exported = try await exportService.export(
             ScreenshotExportRequest(
-                data: rendered,
+                data: data,
                 directory: directory,
                 filenamePrefix: filenamePrefix,
                 optimize: optimize,
@@ -103,8 +134,8 @@ final class ScreenshotWorkflowService {
         )
         let historyEntry = try await historyStore.add(
             exported,
-            pixelWidth: draft.pixelWidth,
-            pixelHeight: draft.pixelHeight
+            pixelWidth: dimensions.width,
+            pixelHeight: dimensions.height
         )
         return ScreenshotWorkflowExportResult(export: exported, historyEntry: historyEntry)
     }

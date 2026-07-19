@@ -163,6 +163,12 @@ actor CaptureHistoryStore {
         try loadIfNeeded()
     }
 
+    func data(for entry: CaptureHistoryEntry) throws -> Data {
+        try withFileAccess(for: entry) { url in
+            try Data(contentsOf: url)
+        }
+    }
+
     @discardableResult
     func add(
         _ export: ExportedScreenshot,
