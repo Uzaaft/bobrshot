@@ -48,6 +48,16 @@ struct CoreOptimizationResult: Equatable, Sendable {
     fileprivate let originalByteCount: Int
 }
 
+struct CoreImageInspection: Equatable, Sendable {
+    let format: CoreImageFormat
+    let widthPixels: Int
+    let heightPixels: Int
+    let frameCount: Int
+    let orientation: UInt8?
+    let hasAlpha: Bool?
+    let hasColorProfile: Bool
+}
+
 enum CoreOptimizationError: Error, Equatable {
     case invalidArgument
     case invalidData
@@ -85,6 +95,37 @@ enum BobrshotCore {
             minor: version.minor,
             patch: version.patch
         )
+    }
+
+    static func inspectImage(_ data: Data) throws -> CoreImageInspection {
+        try data.withUnsafeBytes { buffer in
+            let bytes = buffer.bindMemory(to: UInt8.self)
+            var descriptor = BobrshotImageDescriptorV1()
+            try check(
+                bobrshot_image_inspect_v1(
+                    bytes.baseAddress,
+                    bytes.count,
+                    &descriptor
+                )
+            )
+            guard descriptor.struct_size == MemoryLayout<BobrshotImageDescriptorV1>.size,
+                let format = CoreImageFormat(encodedValue: descriptor.format),
+                descriptor.width > 0,
+                descriptor.height > 0,
+                descriptor.frame_count > 0
+            else {
+                throw CoreOptimizationError.internalFailure(status: BobrshotStatusInternal)
+            }
+            return CoreImageInspection(
+                format: format,
+                widthPixels: Int(descriptor.width),
+                heightPixels: Int(descriptor.height),
+                frameCount: Int(descriptor.frame_count),
+                orientation: descriptor.orientation == 0 ? nil : descriptor.orientation,
+                hasAlpha: descriptor.has_alpha < 0 ? nil : descriptor.has_alpha != 0,
+                hasColorProfile: descriptor.has_color_profile != 0
+            )
+        }
     }
 
     static func optimizeImage(

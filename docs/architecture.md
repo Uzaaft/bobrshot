@@ -2,22 +2,30 @@
 
 Bobrshot has three implementation layers with explicit responsibilities.
 
-## Native macOS Layer
+## Native macOS Host
 
-Swift integrates ScreenCaptureKit, CoreGraphics, AVFoundation, AppKit, and
-other Apple frameworks. This layer owns authorization, display and window
-discovery, capture sessions, global shortcuts, pasteboard behavior, and app
-lifecycle integration.
+Swift is the thin native application host. It owns SwiftUI and AppKit
+presentation, app lifecycle, permissions, pasteboard integration, global
+shortcuts, and asynchronous framework objects such as ScreenCaptureKit streams
+and AVAssetWriter sessions.
 
-SwiftUI owns capture controls, overlays, the editor, history, settings, and
-other user-facing workflows. Native framework objects do not cross into Zig.
+This mirrors Ghostty's macOS boundary: use the platform's native application
+frameworks for the user experience, while moving reusable state and expensive
+processing behind a Zig-owned C ABI. Rewriting UI orchestration in Zig is not a
+performance optimization.
 
 ## Core Layer
 
-Zig owns deterministic, platform-independent processing where it provides a
-clear safety or performance benefit. Planned responsibilities include image
-analysis, crop detection, encoding orchestration, metadata policy, temporary
-artifact bookkeeping, and bounded processing queues.
+Zig owns deterministic processing and may call stable Apple C APIs when that
+keeps expensive work inside the core. It currently owns format detection,
+container validation, metadata policy, and ImageIO-backed image inspection.
+Planned responsibilities include crop detection, pixel transforms, encoding
+orchestration, hashing, temporary artifact bookkeeping, and bounded processing
+queues.
+
+`pkg/apple-sdk` discovers the active Xcode SDK and exposes a deliberately small
+set of manual framework bindings. It avoids importing entire Apple headers and
+does not expose framework objects through the public ABI.
 
 The core is an independent implementation. It does not link to, invoke, or
 vendor Clop.
@@ -30,7 +38,8 @@ status returns. Swift wrappers convert those values into domain types before
 the rest of the application can use them.
 
 The ABI must not expose Zig allocators, Swift objects, Apple framework types,
-or unstable in-memory layouts.
+or unstable in-memory layouts. Apple objects created inside Zig are consumed
+and released before returning across the boundary.
 
 ## Build Ownership
 

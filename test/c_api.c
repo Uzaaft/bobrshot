@@ -12,6 +12,8 @@ _Static_assert(offsetof(BobrshotOptimizeRequestV1, input_bytes) == 8,
                "BobrshotOptimizeRequestV1 layout changed");
 _Static_assert(offsetof(BobrshotOptimizeRequestV1, output_format) == 24,
                "BobrshotOptimizeRequestV1 layout changed");
+_Static_assert(sizeof(BobrshotImageDescriptorV1) == 20,
+               "BobrshotImageDescriptorV1 ABI changed");
 
 int main(void) {
   const uint8_t png[] = {0x89, 'P', 'N', 'G', '\r', '\n', 0x1a, '\n'};

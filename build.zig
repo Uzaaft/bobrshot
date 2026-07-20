@@ -1,7 +1,8 @@
 const std = @import("std");
 const builtin = @import("builtin");
+const apple_sdk = @import("pkg/apple-sdk/build.zig");
 
-pub fn build(builder: *std.Build) void {
+pub fn build(builder: *std.Build) !void {
     const target = builder.standardTargetOptions(.{
         .default_target = .{
             .os_tag = .macos,
@@ -29,11 +30,11 @@ pub fn build(builder: *std.Build) void {
     };
     const xcode_destination = builder.fmt("platform=macOS,arch={s}", .{xcode_architecture});
 
-    const core = addCore(builder, target, optimize);
+    const core = try addCore(builder, target, optimize);
     const native_core = if (target.result.cpu.arch == native_target.result.cpu.arch)
         core
     else
-        addCore(builder, native_target, optimize);
+        try addCore(builder, native_target, optimize);
     builder.installArtifact(core);
 
     const core_tests = builder.addTest(.{
@@ -50,6 +51,7 @@ pub fn build(builder: *std.Build) void {
         .name = "c-api-test",
         .root_module = c_api_test_module,
     });
+    try apple_sdk.configure(builder, c_api_test);
     c_api_test.root_module.addCSourceFile(.{
         .file = builder.path("test/c_api.c"),
         .flags = &.{ "-std=c11", "-Wall", "-Wextra", "-Werror", "-Wpedantic" },
@@ -116,8 +118,8 @@ fn addCore(
     builder: *std.Build,
     target: std.Build.ResolvedTarget,
     optimize: std.builtin.OptimizeMode,
-) *std.Build.Step.Compile {
-    return builder.addLibrary(.{
+) !*std.Build.Step.Compile {
+    const core = builder.addLibrary(.{
         .name = "bobrshot",
         .linkage = .static,
         .root_module = builder.createModule(.{
@@ -126,4 +128,7 @@ fn addCore(
             .optimize = optimize,
         }),
     });
+    core.root_module.addImport("apple_sdk", apple_sdk.createModule(builder, target, optimize));
+    try apple_sdk.configure(builder, core);
+    return core;
 }

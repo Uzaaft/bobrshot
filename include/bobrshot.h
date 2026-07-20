@@ -54,9 +54,22 @@ typedef struct BobrshotOptimizeRequestV1 {
   uint32_t reserved32;
 } BobrshotOptimizeRequestV1;
 
+typedef struct BobrshotImageDescriptorV1 {
+  uint32_t struct_size;
+  uint32_t width;
+  uint32_t height;
+  uint32_t frame_count;
+  BobrshotImageFormat format;
+  uint8_t orientation;
+  int8_t has_alpha;
+  uint8_t has_color_profile;
+} BobrshotImageDescriptorV1;
+
 BobrshotVersion bobrshot_core_version(void);
 BobrshotImageFormat bobrshot_image_format_detect(const uint8_t *bytes,
                                                   size_t length);
+BobrshotStatus bobrshot_image_inspect_v1(const uint8_t *bytes, size_t length,
+                                         BobrshotImageDescriptorV1 *descriptor);
 BobrshotStatus
 bobrshot_image_optimize_v1(const BobrshotOptimizeRequestV1 *request,
                            uint8_t *output_bytes, size_t output_capacity,

@@ -2,6 +2,7 @@ const std = @import("std");
 
 pub const media = @import("media.zig");
 pub const optimizer = @import("optimizer.zig");
+const apple_image = @import("apple_image.zig");
 
 pub const Version = extern struct {
     major: u16,
@@ -58,6 +59,47 @@ const OptimizeRequestV1 = extern struct {
     reserved8: u8,
     reserved32: u32,
 };
+
+const ImageDescriptorV1 = extern struct {
+    struct_size: u32,
+    width: u32,
+    height: u32,
+    frame_count: u32,
+    format: u8,
+    orientation: u8,
+    has_alpha: i8,
+    has_color_profile: u8,
+};
+
+export fn bobrshot_image_inspect_v1(
+    bytes: ?[*]const u8,
+    length: usize,
+    descriptor_ptr: ?*ImageDescriptorV1,
+) callconv(.c) u32 {
+    const descriptor = descriptor_ptr orelse return @intFromEnum(Status.invalid_argument);
+    descriptor.* = std.mem.zeroes(ImageDescriptorV1);
+    descriptor.struct_size = @sizeOf(ImageDescriptorV1);
+    if (length == 0) return @intFromEnum(Status.invalid_data);
+    const input_pointer = bytes orelse return @intFromEnum(Status.invalid_argument);
+    const input = input_pointer[0..length];
+    const format = media.detectImageFormat(input) orelse {
+        return @intFromEnum(Status.unsupported_format);
+    };
+    const result = apple_image.inspect(input, format) catch {
+        return @intFromEnum(Status.invalid_data);
+    };
+    descriptor.* = .{
+        .struct_size = @sizeOf(ImageDescriptorV1),
+        .width = result.width,
+        .height = result.height,
+        .frame_count = result.frame_count,
+        .format = @intFromEnum(result.format),
+        .orientation = result.orientation,
+        .has_alpha = result.has_alpha,
+        .has_color_profile = @intFromBool(result.has_color_profile),
+    };
+    return @intFromEnum(Status.ok);
+}
 
 export fn bobrshot_image_optimize_v1(
     request_ptr: ?*const OptimizeRequestV1,
