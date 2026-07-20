@@ -15,12 +15,16 @@ must come from the host system and should not be installed through Nix.
 - `zig build test` runs the Zig, compiled C API, and native macOS tests.
 - `zig build xcframework` builds `macos/BobrshotKit.xcframework`.
 - `zig build app` builds the native application.
+- `zig build release` builds the Release app with a ReleaseFast Zig core.
+- `zig build benchmark` measures release-optimized image processing throughput.
 - `zig build run` builds and launches the native application.
 - `zig fmt --check .` checks Zig formatting.
 - `swift format lint --recursive --strict macos/Sources macos/Tests` checks Swift formatting.
 
 The built application is written to
 `zig-out/xcode/Build/Products/Debug/Bobrshot.app`.
+The release application is written to
+`zig-out/xcode-release/Build/Products/Release/Bobrshot.app`.
 
 ## Native Boundary
 
